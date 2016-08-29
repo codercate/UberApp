@@ -1,0 +1,54 @@
+<!doctype html>
+
+<html ng-app="uberapp.map">
+    <head>
+        <title>Cate Bissell</title>
+        <script src="angular.js"></script>
+        <script src="ui-bootstrap-tpls-0.12.1.js"></script>
+        <script src="uberapp.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8l1kYhXOK97138U6mjChvamFokKEr3_Q&callback=initMap">
+    </script>
+        <link rel="stylesheet" type="text/css" href="uberapp.css">
+        <link href="bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div id = "controller" ng-controller="MapCtrl">
+            <div>
+                <input type="checkbox" id="rectShow">Select Area?
+            </div>
+            <div id = "container">
+                <div id = "map"></div>
+                <div id = "info">
+                    <h1>Information</h1>
+                    <div ng-show="showTable">
+                        <table>
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Latitude</th>
+                                <th>Longitude</th>
+                                <th>Dropoff Lat</th>
+                                <th>Dropoff Long</th>
+                                <th>Base</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in jArray">
+                                <td>{{item.DateTime}}</td>
+                                <td>{{item.Lat}}</td>
+                                <td>{{item.Long}}</td>
+                                <td>{{item.DropoffLat}}</td>
+                                <td>{{item.DropoffLon}}</td>
+                                <td>{{item.Base}}</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>
