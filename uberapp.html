@@ -16,39 +16,13 @@
     <body>
         <div id = "controller" ng-controller="MapCtrl">
             <div>
-                <input type="checkbox" id="rectShow">Select Area?
-            </div>
-            <div id = "container">
-                <div id = "map"></div>
-                <div id = "info">
-                    <h1>Information</h1>
-                    <div ng-show="showTable">
-                        <table>
-                        <thead>
-                            <tr>
-                                <th>Date/Time</th>
-                                <th>Latitude</th>
-                                <th>Longitude</th>
-                                <th>Dropoff Lat</th>
-                                <th>Dropoff Long</th>
-                                <th>Base</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="item in jArray">
-                                <td>{{item.DateTime}}</td>
-                                <td>{{item.Lat}}</td>
-                                <td>{{item.Long}}</td>
-                                <td>{{item.DropoffLat}}</td>
-                                <td>{{item.DropoffLon}}</td>
-                                <td>{{item.Base}}</td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
+                <h1>Find the Top Uber Pick Up Locations</h1>
+                <div id="checkbox">
+                    <input type="checkbox" id="rectShow">
+                    <span class="checkboxtext"> Select An Area</span>
                 </div>
-
             </div>
+            <div id = "map"></div>
         </div>
     </body>
 </html>

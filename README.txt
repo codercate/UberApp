@@ -28,10 +28,12 @@ a traditional array.
 I tried to base my design decisions primarily on the needs of the user, as well as quick response time of the app.
 
 If I Had More Time:
-If I had more time, I would have included functionality to clear the markers when the rectangle has moved or
+When run locally, the map comes up very quickly. However, when hosted on my website it takes a very long time.
+If I had more time, I would have investigated why this is happening.
+Also, I would have included functionality to clear the markers when the rectangle has moved or
 is removed from the map.
 In addition, I would have added a display of the data points in a table to the side of the map. I did try this,
 but had difficulty with displaying the data since, before the file is read, it is null.
+I also wanted to add a function to calculate, based on how zoomed in the map is, how far away from the map's center the rectangle would be.
+My current design of adding or subtracting .01 only works with the current zoom percentage.
 Finally, I would have added in as many of the extra features listed as I could. 
-In addition, when run locally, the map comes up very quickly. However, when hosted on my website it takes a very long time.
-This is another thing I would look into if I had more time.
