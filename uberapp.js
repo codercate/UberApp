@@ -1,7 +1,7 @@
 angular.module('uberapp.map', ['ui.bootstrap']);
 angular.module('uberapp.map').controller('MapCtrl', function($scope, $location) {
     
-    var data, jsonData;
+    var jsonData;
     var meanLat = 0;
     var meanLong = 0;
     var sumLat = 0;
@@ -13,15 +13,20 @@ angular.module('uberapp.map').controller('MapCtrl', function($scope, $location) 
     var dataArray = [];
     var jArray = {};
     $scope.showTable = true;
+    var markers = [];
+    var first = true;
     
     
     $scope.toJson = function(file) {
         var rows = file.split("\n");
-
-        var headerRow = [];
         
         var length = rows.length;
         var count = length/2;
+        var headerArray = ["DateTime", "Lat", "Long",  "Base", "DropoffLat", "DropoffLon"];
+        var headerCount = 0;
+        var ptArray = [];
+        var ptArrayIndex = 0;
+        var ptCount = [];
 
         for(var i = 1; i < count; i++){
             var line = rows[i].split(",");
@@ -30,8 +35,6 @@ angular.module('uberapp.map').controller('MapCtrl', function($scope, $location) 
             line.push(extra[2]);
             dataArray[i] = line;
         }
-        
-        console.log(dataArray);
         
         $scope.getLatLong();
         
@@ -45,17 +48,18 @@ angular.module('uberapp.map').controller('MapCtrl', function($scope, $location) 
         }
         meanLat = sumLat/(dataArray.length);
         meanLong = sumLong/(dataArray.length);
-        console.log(meanLat);
-        console.log(meanLong);
+        map.setCenter({lat: meanLat, lng: meanLong});
     }
     
     document.getElementById('rectShow').onclick = function() {
-        // access properties using this keyword
         if ( this.checked ) {
+            rectangle.setBounds({
+                north: map.getCenter().lat() + .01,
+                south: map.getCenter().lat() - .01,
+                east: map.getCenter().lng() + .01,
+                west: map.getCenter().lng() - .01
+            });
             rectangle.setMap(map);
-            $scope.createHTMLTable();
-            $scope.showTable = true;
-            console.log($scope.showTable);
         } else {
             rectangle.setMap(null);
             //showTable = false;
@@ -65,20 +69,52 @@ angular.module('uberapp.map').controller('MapCtrl', function($scope, $location) 
     function getBoundsChange(event) {
         var tR = rectangle.getBounds().getNorthEast();
         var bL = rectangle.getBounds().getSouthWest();
+        var newTopLat = tR.lat();
+        var newRightLon = tR.lng();
+        var newBottomLat = bL.lat();
+        var newLeftLon = bL.lng();
+        var ptArray = [];
+        var ptArrayIndex = 0;
+        var count = 0;
+        
+        for(var i = 1; i < dataArray.length; i++) {
+            var lat = parseFloat(dataArray[i][1]);
+            var long = parseFloat(dataArray[i][2]);
+            if(( lat <= newTopLat && lat >= newBottomLat) && (long <= newRightLon && long >= newLeftLon)) {
+                if(!$scope.contains(ptArray, lat, long)) {
+                    ptArray[ptArrayIndex] = {lat, long, count};
+                    ptArrayIndex++;
+                }
+            }
+        }
+        var maxCount = 0;
+        for (var i = 1; i < ptArray.length; i++) {
+            if(ptArray[i].count > maxCount)
+                maxCount = ptArray[i].count;
+        }
+        for (var i = 1; i < ptArray.length; i++) {
+            if(ptArray[i].count > (maxCount/2)) {
+                markers.push(new google.maps.Marker({
+                    map: map,
+                    position: {lat: ptArray[i].lat, lng: ptArray[i].long},
+                    title: "PickUp Location"
+                }));
+            }
+        }
+    }
+    
+    $scope.contains = function(ptArray, lat, long) {
+        for (var i = 1; i < ptArray.length; i++) {
+            if(ptArray[i].lat == lat && ptArray[i].long == long) {
+                ptArray[i].count++;
+                return true;
+            }
+        }
+        return false;
     }
     
     $scope.createHTMLTable = function() {
-        var headerArray = ["DateTime", "Lat", "Long",  "Base", "DropoffLat", "DropoffLon"];
-        var headerCount = 0;
-        for(var i = 1; i < dataArray.length; i++) {
-            if(headerCount == 6)
-                headerCount = 0;
-            var json = {};
-            json[headerArray[headerCount]] = dataArray[i][headerCount];
-            headerCount++;
-            temp = JSON.stringify(json);
-            jArray[i] = JSON.parse(temp);
-        }
+        
         console.log('JARRAY', jArray[1].DateTime);
     }
 
@@ -91,21 +127,13 @@ angular.module('uberapp.map').controller('MapCtrl', function($scope, $location) 
             success: function(data) {$scope.toJson(data);}
         });
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 40.74030578548673, lng: -73.97712350049062},
             zoom: 12,
             mapTypeId: 'terrain'
         });
         
-        var bounds = {
-            north: 40.750,
-            south: 40.730,
-            east: -73.967,
-            west: -73.987
-        };
 
-        // Define a rectangle and set its editable property to true.
+         //Define a rectangle and set its editable property to true.
         rectangle = new google.maps.Rectangle({
-            bounds: bounds,
             editable: true,
             draggable: true,
             strokeColor: '#FF0000',
